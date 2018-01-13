@@ -1,33 +1,35 @@
 import React, { Component } from 'react';
 import './App.css';
-import Person from './Person/Person';
-import ErrorBoundary from './ErrorBoundary/ErrorBoundary';
+import Persons from '../components/Persons/Persons';
 
 class App extends Component {
 
   state = {
     persons: [
-      { name: 'Max', age: '26' },
-      { name: 'Manu', age: '30' },
-      { name: 'Stephanie', age: '26' }
+      { id: 'fdsd', name: 'Max', age: '26' },
+      { id: 'adsf', name: 'Manu', age: '30' },
+      { id: 'efwe', name: 'Stephanie', age: '26' }
     ],
     showPersons: false
   }
 
-  nameChangedHandler = (event) => {
-    this.setState( {
-      persons: [
-        { name: "Max", age: '26' },
-        { name: event.target.value, age: '30' },
-        { name: "Stephanie", age: '26' }
-      ]
-    })
+  nameChangedHandler = ( event, id ) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+    const person = {
+      ...this.state.persons[personIndex]
+    };
+    person.name = event.target.value;
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+    this.setState( { persons: persons })
   }
 
   deletePersonHandler = (personIndex) => {
-   const persons = this.state.persons;
-   persons.splice(personIndex, 1);
-   this.setState({ persons: persons })
+    const persons = [...this.state.persons];
+    persons.splice(personIndex, 1);
+    this.setState({ persons: persons })
   }
 
   togglePersonsHandler = () => {
@@ -44,16 +46,11 @@ class App extends Component {
     if ( this.state.showPersons ) {
       persons = (
         <div>
-        { this.state.persons.map((person, index) => {
-           return <ErrorBoundary><Person click={() => this.deletePersonHandler(index)}
-           name={person.name} 
-           age={person.age} 
-           changed={this.nameChangedHandler} />
-           </ ErrorBoundary>
-        })}
+          <Persons persons={this.state.persons} 
+          clicked={this.deletePersonHandler} 
+          changed={this.nameChangedHandler} />
         </div>
       )
-      // style.backgroundColor = 'white';
     }
 
     const classes = []
